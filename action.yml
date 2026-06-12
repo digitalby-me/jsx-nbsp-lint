@@ -1,0 +1,40 @@
+name: 'jsx-nbsp'
+description: 'Autofix JSX dash widows (breaking space before an em/en dash) and flag misused {" "} between text.'
+branding:
+  icon: 'type'
+  color: 'purple'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install jsx-nbsp
+      shell: bash
+      run: npm ci --prefix "$GITHUB_ACTION_PATH"
+
+    - name: Autofix JSX/TSX
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/bin/jsx-nbsp.js" --fix "$GITHUB_WORKSPACE"
+
+    - name: Commit fixes to the PR branch
+      shell: bash
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        if git diff --quiet -- '*.tsx' '*.jsx'; then
+          echo "No dash widows to fix."
+          exit 0
+        fi
+        if [ "${GITHUB_EVENT_NAME}" = "pull_request" ] && [ "$(jq -r '.pull_request.head.repo.fork' "$GITHUB_EVENT_PATH")" = "true" ]; then
+          echo "::error::Dash widows found in a fork PR (no write access to push the fix)."
+          echo "Run locally: npx eslint-plugin-jsx-nbsp --fix ."
+          exit 1
+        fi
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add '*.tsx' '*.jsx'
+        git commit -m "style: autofix JSX dash widows (jsx-nbsp)"
+        git push

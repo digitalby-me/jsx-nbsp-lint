@@ -1,0 +1,40 @@
+{
+  "name": "eslint-plugin-jsx-nbsp",
+  "version": "1.0.0",
+  "description": "ESLint rules that catch breaking-space typography bugs in JSX: a breaking space before an em/en dash (dash widows) and misused {\" \"} between text.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "jsx",
+    "react",
+    "typography",
+    "nbsp",
+    "non-breaking-space"
+  ],
+  "license": "MIT",
+  "author": "digitalby <yury@digitalby.me>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalby-me/jsx-nbsp-lint.git"
+  },
+  "main": "lib/index.js",
+  "bin": {
+    "jsx-nbsp": "bin/jsx-nbsp.js"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "eslint.bundled.config.mjs"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.40.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0"
+  }
+}

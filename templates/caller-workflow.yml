@@ -1,0 +1,23 @@
+# Installed into each React repo as .github/workflows/jsx-nbsp.yml by
+# scripts/rollout.sh. On every PR it autofixes JSX dash widows and commits the
+# fix back to the PR branch. Pinned to @v1 of digitalby-me/jsx-nbsp-lint.
+name: jsx-nbsp
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jsx-nbsp-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  jsx-nbsp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: digitalby-me/jsx-nbsp-lint@v1
