@@ -18,7 +18,7 @@ gh repo clone "$REPO" "$NAME" -- -q --depth=1 >/dev/null 2>&1
 cd "$ROOT/$NAME"
 if [ -n "$BRANCH" ]; then
   git fetch -q origin "$BRANCH"
-  git checkout -q "$BRANCH"
+  git checkout -q -B "$BRANCH" FETCH_HEAD
   WORKBRANCH="$BRANCH"
 else
   git checkout -q -b fix/jsx-nbsp-https
