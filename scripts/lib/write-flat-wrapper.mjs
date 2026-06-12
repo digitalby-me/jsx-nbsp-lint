@@ -9,8 +9,13 @@ const baseContent = fs.readFileSync(baseFile, 'utf8');
 const isCjs = /module\.exports\s*=/.test(baseContent) && !/export\s+default/.test(baseContent);
 const importPath = './' + baseFile;
 
+// `languageOptions.parserOptions.ecmaFeatures.jsx` is needed so a bare `.jsx`
+// file parses: the base config only matches ts/tsx, so for `.jsx` this is the
+// only applicable block and the default parser must be told to read JSX. For
+// `.tsx` the base's TypeScript parser still wins via languageOptions merge.
 const block = `  {
     files: ["**/*.{jsx,tsx}"],
+    languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
     plugins: { "jsx-nbsp": jsxNbsp },
     rules: {
       "jsx-nbsp/no-breaking-space-before-dash": "error",
