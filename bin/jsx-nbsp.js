@@ -30,13 +30,28 @@ async function main() {
     await ESLint.outputFixes(results);
   }
 
+  // This tool reports ONLY its own two rules. The target repo's unrelated inline
+  // directives (e.g. `// eslint-disable-next-line @next/next/no-img-element`)
+  // make ESLint emit "Definition for rule '...' was not found" because that
+  // plugin isn't registered in the bundled config; those foreign messages must
+  // not fail the run. Keep jsx-nbsp/* messages plus genuine fatal parse errors,
+  // drop everything else, and recompute counts from the filtered set.
+  const filtered = results.map((r) => {
+    const messages = r.messages.filter(
+      (m) => m.fatal || (m.ruleId && m.ruleId.startsWith('jsx-nbsp/')),
+    );
+    const errorCount = messages.filter((m) => m.severity === 2).length;
+    const warningCount = messages.filter((m) => m.severity === 1).length;
+    return { ...r, messages, errorCount, warningCount };
+  });
+
   const formatter = await eslint.loadFormatter('stylish');
-  const output = await formatter.format(results);
+  const output = await formatter.format(filtered);
   if (output.trim()) {
     process.stdout.write(output + '\n');
   }
 
-  const errorCount = results.reduce((n, r) => n + r.errorCount, 0);
+  const errorCount = filtered.reduce((n, r) => n + r.errorCount, 0);
   process.exit(errorCount > 0 ? 1 : 0);
 }
 
